@@ -2,13 +2,13 @@ package logstorage
 
 import (
 	"fmt"
+	db "github.com/coutvv/kabanchik-db/internal/db/key_value_storage"
 	"io/ioutil"
 	"log"
 	"os"
 	"testing"
 	"time"
 )
-import db "github.com/coutvv/kabanchik-db/internal/db/key_value_storage"
 
 var testDbFilename = "test.db"
 
@@ -31,45 +31,32 @@ func TestLogStorageWriteValue(t *testing.T) {
 }
 
 func TestLogStorageReadLastValue(t *testing.T) {
+
+	defer timer("read operation in small db")()
 	var testStorage = db.CreateKeyValueLogStorage(testDbFilename)
-	testStorage.Put("id2", "value")
-	testStorage.Put("id2", "value2")
-	var result, err = testStorage.Get("id2")
+	testStorage.Put("id1", "value")
+	testStorage.Put("id1", "value2")
+	var result, err = testStorage.Get("id1")
 
 	if result != "value2" || err != nil {
-		t.Error("incorrect reading or writing value")
+		t.Error("incorrect reading or writing value: " + result)
 	}
 }
 
-func TestLogStorageReadBench(t *testing.T) {
-	var testStorage = db.CreateKeyValueLogStorage(testDbFilename)
-	var key = "keyval"
-	var valuePrefix = "value #"
-	const max = 50000
-	for i := 0; i <= max; i++ {
-		testStorage.Put(key, valuePrefix+fmt.Sprint(i))
+func timer(name string) func() {
+	start := time.Now()
+	return func() {
+		fmt.Printf("%s took %v\n", name, time.Since(start))
 	}
-
-	var start = time.Now().UnixNano()
-	var result, _ = testStorage.Get(key)
-	var elapsed = time.Now().UnixNano() - start
-
-	if elapsed > 500_000 {
-		t.Error("Too long searching operation for " + fmt.Sprint(max) + " operations")
-	}
-	if result != valuePrefix+fmt.Sprint(max) {
-		t.Error("Incorrect value in db", result)
-	}
-	log.Println("Elapsed : " + fmt.Sprint(elapsed) + " ms")
 }
 
 func TestMain(m *testing.M) {
 	code := m.Run()
-	terminate()
+	afterTest()
 	os.Exit(code)
 }
 
-func terminate() {
+func afterTest() {
 	err := os.Remove(testDbFilename)
 	if err != nil {
 		log.Fatal("can't cleanup test db", err)
