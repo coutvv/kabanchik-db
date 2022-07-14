@@ -12,6 +12,8 @@ import (
 
 var testDbFilename = "test.db"
 
+// TODO: parameterize tests with several implementations of keyValueStorage
+
 func TestLogStorageWriteValue(t *testing.T) {
 	os.Remove(testDbFilename)
 	var testStorage = db.CreateKeyValueLogStorage(testDbFilename)
