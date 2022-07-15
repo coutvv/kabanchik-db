@@ -8,6 +8,16 @@ import (
 	"strings"
 )
 
+/**
+I'm lazy right now, but this storage needs some improvements...
+So for the future implement this issues:
+- TODO: Cut whole db file to segments
+- TODO: Add compaction for segmentation files (for getting rid of obsolete data)
+- TODO: Replace txt files with binary format
+- TODO: Add feature "Removing record"
+- TODO: Save hashIndex to the disk periodically and restore it with restarting
+- TODO: Make Read operation concurrent
+*/
 type LogStorageIndexed struct {
 	filename    string
 	dbHashIndex map[string]int64 // key to offset in file
