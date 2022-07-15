@@ -11,3 +11,7 @@ func Timer(name string) func() {
 		fmt.Printf("%s took %v\n", name, time.Since(start))
 	}
 }
+
+func WaitForIt(seconds int) {
+	time.Sleep(time.Duration(seconds * 1_000_000_000))
+}
